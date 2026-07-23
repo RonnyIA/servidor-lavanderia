@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
@@ -17,13 +18,17 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
+// Servir archivos estáticos del frontend (React / Vite)
+// Asegúrate de incluir la carpeta de compilación (habitualmente 'dist' o 'public')
+app.use(express.static(path.join(__dirname, 'dist')));
+
 // 1. Ruta puente para los enlaces /ir/:token
 app.get('/ir/:token', (req, res) => {
   const token = (req.params.token || '').trim();
   if (!token) {
     return res.redirect('/');
   }
-  // Redirige al frontend cargando los parámetros necesarios
+  // Redirige a la raíz cargando los parámetros necesarios
   return res.redirect(`/?remoto=true&token=${encodeURIComponent(token)}`);
 });
 
@@ -80,6 +85,11 @@ io.on('connection', (socket) => {
     }
     console.log(`[Socket Disconnected]: ${socket.id}`);
   });
+});
+
+// 3. Captura cualquier otra ruta GET y sirve el index.html del frontend
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Puerto asignado por Render dinámicamente
