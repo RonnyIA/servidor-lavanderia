@@ -1,0 +1,8 @@
+{
+  "name": "lavanderia.lat web",
+  "description": "Sistema de gestión, facturación y control de pedidos en tiempo real para lavanderías.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
