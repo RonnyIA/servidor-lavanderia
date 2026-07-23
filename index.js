@@ -6,7 +6,6 @@ const cors = require('cors');
 const app = express();
 const server = http.createServer(app);
 
-// Configuración de Socket.IO con CORS
 const io = new Server(server, {
   cors: {
     origin: '*',
@@ -17,30 +16,29 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-// URL de tu aplicación Web principal (donde se renderiza la UI)
-const WEB_APP_URL = 'https://lavander-a-pro-5-7.ai.studio';
+// ⚠️ CAMBIA ESTA CONSTANTE POR LA URL EXACTA DONDE ABRE TU APP EN AI STUDIO
+// (La URL que ves en la barra de direcciones cuando la app está corriendo en el navegador)
+const FRONTEND_URL = 'https://lavander-a-pro-5-7.ai.studio'; 
 
 // 1. Ruta puente para los enlaces /ir/:token
 app.get('/ir/:token', (req, res) => {
   const token = (req.params.token || '').trim();
   if (!token) {
-    return res.redirect(WEB_APP_URL);
+    return res.redirect(FRONTEND_URL);
   }
-  // Redirige al frontend cargando los parámetros del monitor remoto
-  return res.redirect(`${WEB_APP_URL}/?remoto=true&token=${encodeURIComponent(token)}`);
+  // Redirige pasando las variables de entorno
+  return res.redirect(`${FRONTEND_URL}/?remoto=true&token=${encodeURIComponent(token)}`);
 });
 
-// Redirige la raíz / a la aplicación web
 app.get('/', (req, res) => {
-  return res.redirect(WEB_APP_URL);
+  res.redirect(FRONTEND_URL);
 });
 
-// Comprobación de salud en Render
 app.get('/health', (req, res) => {
   res.status(200).send('OK - Servidor Puente Activo');
 });
 
-// 2. Lógica de WebSockets (Socket.IO) por salas (Rooms)
+// 2. Puente de WebSockets por salas
 io.on('connection', (socket) => {
   console.log(`[Socket Connected]: ${socket.id}`);
 
